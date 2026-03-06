@@ -8,6 +8,7 @@ import { UserStore } from '../user.store';
 import { MatDialog } from '@angular/material/dialog';
 import { UserForm } from '../user-form/user-form';
 import { RouterLink } from "@angular/router";
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-user-list',
@@ -18,14 +19,14 @@ import { RouterLink } from "@angular/router";
 export class UserList {
   // Definimos las columnas que queremos mostrar en la tabla
   displayedColumns: string[] = ['nombre', 'login', 'email', 'rol', 'estado', 'acciones'];
-  
+
   // Exponemos el observable directamente a la vista
   private readonly usersStore = inject(UserStore);
   users$ = this.usersStore.users$;
   private dialog = inject(MatDialog);
   public isAdmin$ = this.usersStore.isAdmin$;
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
     this.usersStore.loadUsers(); // Disparamos la carga inicial
@@ -38,34 +39,38 @@ export class UserList {
 
 
   borrar(usuario: any) {
-  const mensaje = `¿Estás seguro de que quieres eliminar a ${usuario.dsNombre}?`;
-  
-  if (confirm(mensaje)) {
-    this.usersStore.deleteUser(usuario.cdUsuario);
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: { mensaje: `¿Estás seguro de que quieres eliminar a ${usuario.dsNombre}?` }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.usersStore.deleteUser(usuario.cdUsuario);
+      }
+    });
   }
-}
 
 
-abrirForm(usuario?: any) {
-  const dialogRef = this.dialog.open(UserForm, {
-    width: '450px',
-    data: usuario // Si es undefined, el form sabe que es "Nuevo"
-  });
+  abrirForm(usuario?: any) {
+    const dialogRef = this.dialog.open(UserForm, {
+      width: '450px',
+      data: usuario // Si es undefined, el form sabe que es "Nuevo"
+    });
 
-  dialogRef.afterClosed().subscribe(result => {
-    if (result) {
-      // Aquí llamaremos al store para guardar el usuario (ya sea nuevo o editado)
-      this.usersStore.saveUser(result);
-      console.log('Data para guardar:', result);
-    }
-  });
-}
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Aquí llamaremos al store para guardar el usuario (ya sea nuevo o editado)
+        this.usersStore.saveUser(result);
+        console.log('Data para guardar:', result);
+      }
+    });
+  }
 
-setRole(id: number) {
-  // Accedemos al store para cambiar el usuario actual (solo para prueba)
-  (this.usersStore as any)._currentUser.next({
-    dsNombre: id === 1 ? 'Admin' : 'Operador',
-    cdRol: id
-  });
-}
+  // setRole(id: number) {
+  //   // Accedemos al store para cambiar el usuario actual (solo para prueba)
+  //   (this.usersStore as any)._currentUser.next({
+  //     dsNombre: id === 1 ? 'Admin' : 'Operador',
+  //     cdRol: id
+  //   });
+  // }
 }

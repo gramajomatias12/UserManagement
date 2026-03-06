@@ -5,12 +5,19 @@
   style="position: fixed; top: 0; z-index: 1000;">
 </mat-progress-bar>
 
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" *ngIf="store.currentUser$ | async as user">
   <span>User Management System</span>
+  
+  <span class="spacer"></span> <button mat-button routerLink="/home">Inicio</button>
+  <button mat-button routerLink="/usuarios" *ngIf="store.isAdmin$ | async">Gestión</button>
+  
+  <span style="font-size: 14px; margin: 0 15px;">Hola, {{ user.dsNombre }}</span>
+  
+  <button mat-icon-button (click)="store.logout()" matTooltip="Cerrar Sesión">
+    <mat-icon>logout</mat-icon>
+  </button>
 </mat-toolbar>
 
-<main>
-  <app-user-list></app-user-list>
+<main [class.no-padding]="!(store.currentUser$ | async)">
+  <router-outlet></router-outlet>
 </main>
-
-<!-- <router-outlet /> -->

@@ -3,18 +3,19 @@ import { CanActivateFn, Router } from '@angular/router';
 import { UserStore } from '../features/users/user.store';
 import { first, map } from 'rxjs';
 
-export const adminGuard: CanActivateFn = () => {
+
+export const adminGuard: CanActivateFn = (route, state) => {
   const store = inject(UserStore);
   const router = inject(Router);
 
-  return store.isAdmin$.pipe(
-    first(),
-    map(isAdmin => {
-      if (isAdmin) return true;
-      // Si no es admin, lo mandamos a una página de "No Autorizado" o al Home
-      console.warn('Acceso denegado - Se requiere rol de Admin');
-      router.navigate(['/home']); 
-      return false;
-    })
-  );
+  // Obtenemos el valor actual del usuario
+  const user = localStorage.getItem('user_data') ? JSON.parse(localStorage.getItem('user_data')!) : null;
+
+  if (user && Number(user.cdRol) === 1) {
+    return true;
+  }
+  console.log(user)
+  console.error('Acceso denegado - Se requiere rol de Admin');
+  router.navigate(['/home']);
+  return false;
 };

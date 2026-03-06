@@ -5,12 +5,17 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { loadingInterceptor } from './core/loading.interceptor';
 import { errorInterceptor } from './core/error.interceptor';
+import { authInterceptor } from './core/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([loadingInterceptor, errorInterceptor]))
+    provideHttpClient(withInterceptors([
+      authInterceptor,    // 1. Pone el token
+      loadingInterceptor, // 2. Muestra el spinner
+      errorInterceptor    // 3. Atrapa errores
+    ]))
   ]
 };
