@@ -33,7 +33,6 @@ export class UserList {
   editar(usuario: any) {
     //console.log('Editar:', usuario);
     this.abrirForm(usuario);
-    // Próximamente abriremos el form aquí
   }
 
 
@@ -54,7 +53,7 @@ abrirForm(usuario?: any) {
 
   dialogRef.afterClosed().subscribe(result => {
     if (result) {
-      // Aquí llamaremos al store para guardar
+      // Aquí llamaremos al store para guardar el usuario (ya sea nuevo o editado)
       this.usersStore.saveUser(result);
       console.log('Data para guardar:', result);
     }

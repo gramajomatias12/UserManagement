@@ -1,3 +1,10 @@
+<mat-progress-bar 
+  *ngIf="loadingService.loading$ | async" 
+  mode="indeterminate" 
+  color="accent" 
+  style="position: fixed; top: 0; z-index: 1000;">
+</mat-progress-bar>
+
 <mat-toolbar color="primary">
   <span>User Management System</span>
 </mat-toolbar>
