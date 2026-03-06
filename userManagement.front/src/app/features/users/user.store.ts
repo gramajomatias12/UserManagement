@@ -15,7 +15,7 @@ export class UserStore {
   private readonly _roles = new BehaviorSubject<any[]>([]);
   readonly roles$ = this._roles.asObservable();
 
-  constructor(private data: Data) {}
+  constructor(private data: Data) { }
 
   // Getter para obtener el valor actual sin suscribirse
   get usersValue() { return this._users.getValue(); }
@@ -33,37 +33,50 @@ export class UserStore {
   );
 
 
-saveUser(userData: any) {
-  this.data.postEntidad('Usuarios', userData).subscribe({
-    next: () => {
-      this.loadUsers(); 
-      console.log('Usuario guardado con éxito');
-    },
-    error: (err) => {
-      console.error('Error al guardar:', err);
-    }
+  saveUser(userData: any) {
+    this.data.postEntidad('Usuarios', userData).subscribe({
+      next: () => {
+        this.loadUsers();
+        console.log('Usuario guardado con éxito');
+      },
+      error: (err) => {
+        console.error('Error al guardar:', err);
+      }
+    });
+  }
+
+  deleteUser(cdUsuario: number) {
+    // Creamos el objeto que espera el SP
+    const dataABorrar = { cdUsuario: cdUsuario };
+
+    this.data.postEntidad('Usuarios_D', dataABorrar).subscribe({
+      next: () => {
+        this.loadUsers(); // Actualiza la tabla automáticamente
+        console.log('Usuario eliminado');
+      },
+      error: (err) => console.error('Error al borrar:', err)
+    });
+  }
+
+
+  loadRoles() {
+    this.data.getEntidad('Roles').subscribe(data => {
+      const list = typeof data === 'string' ? JSON.parse(data) : data;
+      this._roles.next(list);
+    });
+  }
+
+  // simulacion de autenticación y permisos (para mostrar/ocultar botones) //
+  private readonly _currentUser = new BehaviorSubject<any>({
+    dsNombre: 'Admin',
+    cdRol: 2, // 1 = Administrador, 2 = Operador
+    dsRol: 'Administrador'
   });
-}
 
-deleteUser(cdUsuario: number) {
-  // Creamos el objeto que espera el SP
-  const dataABorrar = { cdUsuario: cdUsuario };
+  readonly currentUser$ = this._currentUser.asObservable();
 
-  this.data.postEntidad('Usuarios_D', dataABorrar).subscribe({
-    next: () => {
-      this.loadUsers(); // Actualiza la tabla automáticamente
-      console.log('Usuario eliminado');
-    },
-    error: (err) => console.error('Error al borrar:', err)
-  });
-}
-
-  
-loadRoles() {
-  this.data.getEntidad('Roles').subscribe(data => {
-    const list = typeof data === 'string' ? JSON.parse(data) : data;
-    this._roles.next(list);
-  });
-}
-
+  // Un helper rápido para saber si es Admin
+  public isAdmin$ = this.currentUser$.pipe(
+    map(user => user?.cdRol === 1)
+  );
 }

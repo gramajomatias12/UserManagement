@@ -4,10 +4,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Loading } from './core/loading';
 import { CommonModule } from '@angular/common';
+// import { RouterOutlet } from "@angular/router";
 
 @Component({
   selector: 'app-root',
-  imports: [UserList, MatToolbarModule, MatProgressBarModule, CommonModule],
+  imports: [UserList, MatToolbarModule, MatProgressBarModule, CommonModule, ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

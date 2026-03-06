@@ -7,10 +7,11 @@ import { MatChipsModule } from '@angular/material/chips'; // Para etiquetas de R
 import { UserStore } from '../user.store';
 import { MatDialog } from '@angular/material/dialog';
 import { UserForm } from '../user-form/user-form';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-user-list',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatChipsModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatChipsModule, RouterLink],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss',
 })
@@ -22,7 +23,7 @@ export class UserList {
   private readonly usersStore = inject(UserStore);
   users$ = this.usersStore.users$;
   private dialog = inject(MatDialog);
-
+  public isAdmin$ = this.usersStore.isAdmin$;
 
   constructor() {}
 
@@ -57,6 +58,14 @@ abrirForm(usuario?: any) {
       this.usersStore.saveUser(result);
       console.log('Data para guardar:', result);
     }
+  });
+}
+
+setRole(id: number) {
+  // Accedemos al store para cambiar el usuario actual (solo para prueba)
+  (this.usersStore as any)._currentUser.next({
+    dsNombre: id === 1 ? 'Admin' : 'Operador',
+    cdRol: id
   });
 }
 }
