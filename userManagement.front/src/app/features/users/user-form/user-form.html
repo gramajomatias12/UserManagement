@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>{{ data ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="userForm"
+  <form [formGroup]="userForm" autocomplete="off"
     style="display: flex; flex-direction: column; gap: 10px; min-width: 300px; padding-top: 10px;">
 
     <div style="display: flex; gap: 10px;">
@@ -29,12 +29,12 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Contraseña</mat-label>
-      <input matInput formControlName="dsContraseña" type="password">
+      <input matInput formControlName="dsContraseña" type="password" autocomplete="new-password">
     </mat-form-field>
 
     <mat-form-field appearance="outline" style="width: 100%;">
       <mat-label>Confirmar Contraseña</mat-label>
-      <input matInput formControlName="confirmarContraseña" type="password">
+      <input matInput formControlName="confirmarContraseña" type="password" autocomplete="new-password">
 
       <mat-error *ngIf="userForm.hasError('passwordsNoMatch')">
         Las contraseñas no coinciden.

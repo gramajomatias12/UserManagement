@@ -12,7 +12,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
             if (error.status === 400) {
                 mensaje = 'Solicitud incorrecta';
-            } else if (error.status === 404) {
+            }
+            else if (error.status === 401) {
+                mensaje = 'Sesión expirada o no autorizada';
+                localStorage.clear(); // Limpiamos todo
+                window.location.href = '/login'; // O usá el router.navigate si inyectás Router
+            }
+            else if (error.status === 404) {
                 mensaje = 'No se encontró el recurso solicitado';
             } else if (error.status === 0) {
                 mensaje = 'El servidor está apagado o no hay internet';

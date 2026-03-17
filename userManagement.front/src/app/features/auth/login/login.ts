@@ -42,7 +42,8 @@ export class Login implements OnInit {
         error: (err) => {
           // Si entra acá, es porque .NET devolvió BadRequest()
           // Mostramos una alerta o dejamos que tu ErrorInterceptor haga lo suyo
-          alert('Usuario o contraseña incorrectos');
+          
+          //alert('Usuario o contraseña incorrectos');
           console.error('Login falló:', err);
         }
       });
