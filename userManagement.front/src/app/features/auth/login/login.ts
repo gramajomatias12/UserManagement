@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -7,11 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { UserStore } from '../../users/user.store';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -19,6 +20,7 @@ export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private store = inject(UserStore);
   private router = inject(Router);
+  hide = signal(true);
 
   loginForm = this.fb.group({
     dsLogin: ['', [Validators.required]],
@@ -48,5 +50,10 @@ export class Login implements OnInit {
         }
       });
     }
+  }
+
+  togglePassword(event: MouseEvent) {
+    this.hide.set(!this.hide()); // Cambiamos el valor del signal
+    event.stopPropagation(); // Evitamos que el clic dispare otras acciones del form
   }
 }

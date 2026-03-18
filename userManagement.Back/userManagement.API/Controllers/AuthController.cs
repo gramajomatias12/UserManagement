@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using userManagement.API.Classes;
 using userManagement.API.Models;
 using System.Text.Json; // Para manejar el body que llega de Angular
+using BCrypt.Net;
 
 namespace userManagement.API.Controllers
 {
@@ -23,6 +24,7 @@ namespace userManagement.API.Controllers
         public IActionResult Login([FromBody] JsonElement data)
         {
             string jsonParametros = data.GetRawText();
+            string passwordIngresada = data.GetProperty("dsContraseña").GetString()!;
             AccesoDatos db = new(_configuration);
 
             // Ejecutamos el SP
@@ -37,7 +39,15 @@ namespace userManagement.API.Controllers
             // IMPORTANTE: SQL devuelve un string JSON. 
             // Lo convertimos en un objeto real para que .NET no lo mande como "texto con comillas"
             var usuarioObj = JsonDocument.Parse(res.Items.ToString()!).RootElement;
+            string hashDeLaBase = usuarioObj.GetProperty("dsContraseña").GetString()!;
 
+            //BCrypt compara la clave plana con el Hash
+            bool esValida = BCrypt.Net.BCrypt.Verify(passwordIngresada, hashDeLaBase);
+
+            if (!esValida) {
+                return BadRequest("Contraseña incorrecta");
+            }
+            
             // Generamos el token (usando los datos del objeto que acabamos de parsear)
             string login = usuarioObj.GetProperty("dsLogin").GetString()!;
             string rol = usuarioObj.GetProperty("dsRol").GetString()!;

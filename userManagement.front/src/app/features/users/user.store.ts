@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
+
 export class UserStore {
   // 1. PRIMERO declaramos las variables de estado
   private readonly _currentUser = new BehaviorSubject<any>(null);

@@ -9,12 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { UserStore } from '../user.store';
 
 export const passwordsMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  const password = control.get('dsContraseña');
+  const password = control.get('dsPassword');
   const confirmPassword = control.get('confirmarContraseña');
 
   // Si los campos no coinciden, devolvemos un error personalizado
-  return password && confirmPassword && password.value !== confirmPassword.value 
-    ? { passwordsNoMatch: true } 
+  return password && confirmPassword && password.value !== confirmPassword.value
+    ? { passwordsNoMatch: true }
     : null;
 };
 
@@ -29,23 +29,23 @@ export class UserForm {
   private fb = inject(FormBuilder);
   private store = inject(UserStore);
   private dialogRef = inject(MatDialogRef<UserForm>);
-  
+
   // Recibimos los datos si es edición
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
 
   userForm: FormGroup = this.fb.group({
     cdUsuario: [0],
     dsLogin: ['', [Validators.required, Validators.minLength(4)]],
-    dsContraseña: ['', [Validators.required, Validators.minLength(4)]],
+    dsPassword: ['', [Validators.required, Validators.minLength(4)]],
     confirmarContraseña: ['', [Validators.required, Validators.minLength(4)]],
     dsNombre: ['', Validators.required],
     dsApellido: ['', Validators.required],
     dsEmail: ['', [Validators.required, Validators.email]],
     cdRol: [null, Validators.required],
     icActivo: [true]
-  }, { 
+  }, {
     validators: passwordsMatchValidator //Agregamos la validación al GRUPO
-  }); 
+  });
 
   roles$ = this.store.roles$; // Para el combo de roles
 
@@ -53,17 +53,28 @@ export class UserForm {
     this.store.loadRoles(); // Cargamos los roles al abrir
 
     if (this.data) {
-      // Si hay data, llenamos el form (EDICIÓN)
-      this.userForm.patchValue(this.data); 
-      // Sincronizamos manualmente el campo de confirmación
-      this.userForm.get('confirmarContraseña')?.setValue(this.data.dsContraseña);
+      // 1. Cargamos los datos básicos (Nombre, Login, etc.)
+      this.userForm.patchValue(this.data);
+
+      // 2. IMPORTANTE: En edición, el password NO debe ser obligatorio
+      // Limpiamos los campos de password para que empiecen vacíos
+      this.userForm.get('dsPassword')?.setValue('');
+      this.userForm.get('confirmarContraseña')?.setValue('');
+
+      // Quitamos el validador de 'required' solo para edición
+      this.userForm.get('dsPassword')?.setValidators([Validators.minLength(4)]);
+      this.userForm.get('confirmarContraseña')?.setValidators([Validators.minLength(4)]);
     }
+
+    // Refrescamos las validaciones
+    this.userForm.get('dsPassword')?.updateValueAndValidity();
+    this.userForm.get('confirmarContraseña')?.updateValueAndValidity();
   }
 
   guardar() {
-  if (this.userForm.valid) {
-    const { confirmarContraseña, ...usuarioParaGuardar } = this.userForm.value;
-    this.dialogRef.close(usuarioParaGuardar); // Mandamos el objeto sin el campo extra
+    if (this.userForm.valid) {
+      const { confirmarContraseña, ...usuarioParaGuardar } = this.userForm.value;
+      this.dialogRef.close(usuarioParaGuardar); // Mandamos el objeto sin el campo extra
     }
   }
 
