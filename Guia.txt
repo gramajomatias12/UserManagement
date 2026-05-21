@@ -1,0 +1,353 @@
+GUIA DE ESTUDIO REESCRITA SEGUN EL PROYECTO REAL
+
+MES 2 - Angular Intermedio + Buenas Practicas
+
+Objetivo
+Llevar Angular a un nivel mas profesional, trabajando con una SPA real, arquitectura separada por responsabilidades, manejo de estado reactivo, autenticacion, autorizacion y una UX mas cuidada.
+
+Que use realmente en este proyecto
+
+Frontend (Angular)
+- Angular 20.
+- Componentes standalone.
+- Angular Router con rutas reales y proteccion de acceso.
+- Guards para autorizacion por rol.
+- Interceptors HTTP encadenados.
+- Manejo de estado simple con BehaviorSubject.
+- Reactive Forms con validaciones avanzadas y validacion cruzada.
+- Angular Material para UI, dialogs, tablas, chips, forms, toolbar, progress bar y snackbars.
+- Control de sesion con localStorage.
+- Loader global para peticiones HTTP.
+
+Backend (.NET)
+- ASP.NET Core Web API en .NET 8.
+- JWT para autenticacion.
+- TokenService para generacion de tokens.
+- ADO.NET para acceso a datos.
+- Endpoint de login dedicado.
+- Endpoint generico para entidades.
+- BCrypt para hash de contraseñas.
+- CORS y Swagger en desarrollo.
+
+Base de datos (SQL Server)
+- Tabla de usuarios.
+- Tabla de roles.
+- Stored procedures para listar, guardar y eliminar usuarios.
+- Stored procedure de autenticacion.
+- OPENJSON y FOR JSON PATH para interoperar con .NET.
+
+Importante
+Este proyecto avanzo bastante mas que el plan original del mes 2.
+No quedo solamente como un ejercicio de frontend intermedio: en la practica terminaste construyendo una SPA con login real, roles, JWT, guards, interceptors, store reactivo y soporte backend + SQL.
+
+Proyecto 2
+Sistema de Gestion de Usuarios
+
+Objetivo del proyecto
+Demostrar que sabes construir una SPA moderna en Angular con estructura profesional, estado reactivo, proteccion de rutas, manejo global de peticiones y una interfaz mas cercana a un entorno real de empresa.
+
+Descripcion del proyecto
+Sistema de Gestion de Usuarios es una SPA desarrollada en Angular que permite iniciar sesion, administrar usuarios, asignar roles y controlar si un usuario esta activo o no. El frontend esta organizado en capas core, features y shared. El backend esta hecho con ASP.NET Core Web API y usa SQL Server para persistencia. La autenticacion se resuelve con JWT y el guard de Angular protege las rutas administrativas.
+
+Funcionalidades implementadas
+- Login de usuario.
+- Persistencia de sesion con token en localStorage.
+- Toolbar con navegacion y logout.
+- Ruta de inicio.
+- Pantalla de gestion de usuarios.
+- Listado de usuarios en tabla.
+- Alta de usuarios.
+- Edicion de usuarios.
+- Eliminacion de usuarios con confirmacion previa.
+- Visualizacion de rol mediante chip.
+- Visualizacion de estado activo/inactivo mediante iconos.
+- Carga de roles desde backend.
+- Restriccion de acceso a gestion solo para admins.
+- Loading global durante requests.
+- Manejo global de errores con mensajes al usuario.
+
+Que estudiaste de verdad en este proyecto
+
+Angular intermedio/profesional
+- Separacion de responsabilidades en core, features y shared.
+- Uso de Router para una SPA con varias vistas.
+- Guards para controlar acceso segun el rol del usuario.
+- Interceptors para token, loading y errores.
+- Manejo de estado con BehaviorSubject para usuario actual, usuarios y roles.
+- Formularios reactivos con Validators y validador custom.
+- Dialogos reutilizables para confirmacion y formularios.
+- UI reactiva con async pipe.
+- Ocultar o mostrar acciones segun permisos.
+
+Buenas practicas aplicadas
+- Store central para evitar logica duplicada en componentes.
+- Interceptors para no repetir logica HTTP en cada pantalla.
+- Guard para mover la autorizacion fuera de los componentes.
+- Confirm dialog para acciones destructivas.
+- Feedback visual al usuario con snackbars y progress bar.
+- Carga de datos por observables y estado compartido.
+
+Proyecto real vs plan original
+En el plan habias pensado enfocarte 70 por ciento en frontend profesional.
+En el proyecto real hiciste eso y ademas sumaste:
+- Autenticacion JWT.
+- Login real contra backend.
+- Hash de contraseñas con BCrypt.
+- Base SQL real con usuarios y roles.
+- API en .NET para soporte del frontend.
+
+Modelo de datos real
+
+Tabla: Usuarios
+Campos que aparecen efectivamente en el proyecto
+- cdUsuario
+- dsLogin
+- dsContraseña
+- dsNombre
+- dsApellido
+- dsEmail
+- cdRol
+- icActivo
+- dtCreacion
+
+Tabla: Roles
+Campos confirmados por el proyecto
+- cdRol
+- dsRol
+
+Datos semilla detectados
+- Usuario admin con rol administrador.
+- Usuario user con rol de usuario comun.
+- Roles Admin y User.
+
+Roles manejados en el proyecto
+- Admin
+- User
+
+Stored procedures reales detectados
+- Auth_Login: autentica un usuario activo por login y contraseña.
+- SIS_Roles_S: devuelve los roles.
+- SIS_Usuarios_S: devuelve el listado de usuarios.
+- SIS_Usuarios_IU: inserta o actualiza usuarios.
+- SIS_Usuarios_D: elimina usuarios.
+
+Aclaracion tecnica importante
+En el backend, cuando se guarda un usuario, la contraseña se procesa con BCrypt antes de enviar los datos a SQL. Eso muestra una mejora real respecto a un CRUD simple y suma mucho para explicar el proyecto.
+
+Arquitectura real del frontend
+src/app
+- core
+  - auth.guard.ts
+  - auth.interceptor.ts
+  - error.interceptor.ts
+  - loading.interceptor.ts
+  - loading.ts
+  - data.ts
+- features
+  - auth/login
+  - inicio
+  - users
+    - user-list
+    - user-form
+    - user.store.ts
+- shared
+  - confirm-dialog
+- app.routes.ts
+- app.config.ts
+- app.ts
+
+Que demuestra esta estructura
+- core centraliza infraestructura transversal.
+- features encapsula funcionalidades de negocio.
+- shared contiene piezas reutilizables.
+- el store evita que el componente quede cargado de logica.
+
+Manejo de estado real
+Store: UserStore
+Estado manejado
+- currentUser
+- users
+- roles
+- isAdmin derivado del usuario actual
+- activeUsers derivado de la lista de usuarios
+
+Que demuestra
+- Entendes estado compartido sin necesidad de NgRx.
+- Sabes usar BehaviorSubject para exponer streams y calcular datos derivados.
+- Resolviste autologin a partir de localStorage.
+
+Guards reales
+Guard: adminGuard
+Comportamiento
+- Lee el usuario actual desde localStorage.
+- Permite acceso a /usuarios solo si cdRol es 1.
+- Si no es admin, redirige a /home.
+
+Interceptors reales
+- authInterceptor: agrega el token Bearer a cada request si existe.
+- loadingInterceptor: prende y apaga un loader global durante las peticiones.
+- errorInterceptor: captura errores HTTP, muestra mensajes con SnackBar y limpia sesion ante 401.
+
+Rutas reales del proyecto
+- /login
+- /home
+- /usuarios protegida por adminGuard
+- redireccion por defecto a /login
+- wildcard a /login
+
+Formularios reales
+
+Formulario de login
+- dsLogin obligatorio.
+- dsContraseña obligatoria.
+- minimo de longitud para contraseña.
+- boton deshabilitado si el formulario es invalido.
+- toggle para mostrar/ocultar contraseña.
+
+Formulario de usuario
+- dsLogin obligatorio y con minimo de longitud.
+- dsPassword obligatorio en alta.
+- confirmarContraseña obligatorio.
+- dsNombre obligatorio.
+- dsApellido obligatorio.
+- dsEmail obligatorio con validacion de email.
+- cdRol obligatorio.
+- icActivo editable.
+- validador custom para comprobar coincidencia de contraseñas.
+- en edicion, la contraseña deja de ser obligatoria.
+
+Pantallas reales del proyecto
+
+Pantalla de login
+- Card de acceso.
+- Campos de usuario y contraseña.
+- Toggle visual para ver la clave.
+- Boton de ingreso deshabilitado hasta validar.
+
+Pantalla principal autenticada
+- Toolbar superior.
+- Saludo al usuario logueado.
+- Navegacion a Inicio y Gestion.
+- Logout.
+- Progress bar global cuando hay requests.
+
+Pantalla de gestion de usuarios
+- Tabla con nombre, login, email, rol, estado y acciones.
+- Chip visual para rol.
+- Icono verde o rojo para activo/inactivo.
+- Boton Nuevo Usuario visible para admin.
+- Edicion y borrado solo para admin.
+- Mensaje vacio si no hay usuarios.
+
+UX real implementada
+- Loader global mientras se resuelven requests.
+- Confirmacion antes de eliminar.
+- Snackbars de exito y error.
+- Acciones ocultas o visibles segun el rol.
+- Logout y redireccion automatica si expira la sesion.
+- Feedback visual claro para estados de usuario.
+
+Backend real del proyecto
+Estructura principal
+- Controllers/AuthController.cs
+- Controllers/EntidadController.cs
+- Classes/TokenService.cs
+- Classes/AccesoDatos.cs
+- Models/PeticionGenerica.cs
+- Models/Respuesta.cs
+- Program.cs
+- appsettings.json
+
+Que aprender del backend en este proyecto
+- Como autenticar usuarios con JWT.
+- Como emitir tokens con claims.
+- Como configurar JwtBearer en ASP.NET Core.
+- Como hashear contraseñas con BCrypt.
+- Como mantener un endpoint de login separado del CRUD.
+- Como reutilizar un controlador generico para entidades.
+- Como conectar SQL Server desde ADO.NET.
+
+Endpoints reales detectados
+POST /api/Auth/login
+- autentica usuario y devuelve token + datos del usuario.
+
+GET /api/Entidad/Usuarios
+- devuelve el listado de usuarios.
+
+POST /api/Entidad/Usuarios
+- inserta o actualiza usuarios.
+
+POST /api/Entidad/Usuarios_D
+- elimina usuarios.
+
+GET /api/Entidad/Roles
+- devuelve los roles para el formulario.
+
+Plan semanal reescrito segun este proyecto
+
+Semana 1
+- Organizar Angular con core, features y shared.
+- Crear rutas reales y vistas base.
+- Implementar pantalla de login.
+- Entender formularios reactivos y validaciones basicas.
+
+Semana 2
+- Crear store con BehaviorSubject.
+- Persistir sesion en localStorage.
+- Implementar auth guard.
+- Mostrar u ocultar contenido segun el rol.
+
+Semana 3
+- Implementar interceptors para token, loading y errores.
+- Crear ABM de usuarios.
+- Resolver formularios avanzados con validaciones custom.
+- Mejorar UX con dialogs, snackbars y estados visuales.
+
+Semana 4
+- Integrar backend real con JWT.
+- Conectar SQL Server y stored procedures.
+- Agregar hash de contraseñas.
+- Ajustar autorizacion y flujo completo de login.
+- Refactor final y documentacion.
+
+Resultado esperado al final del mes
+- SPA Angular con estructura profesional.
+- Login real con JWT.
+- Rutas protegidas por guard.
+- Interceptors globales funcionando.
+- Estado reactivo con BehaviorSubject.
+- CRUD de usuarios con roles y estado activo.
+- Formularios avanzados y UX mucho mas solida.
+- Proyecto fuerte para defender como frontend serio con conocimientos full stack de soporte.
+
+Como defender este proyecto en entrevista
+"Es una SPA desarrollada en Angular 20 donde implemente una arquitectura separada en core, features y shared. Maneje el estado con BehaviorSubject, protegi rutas con un guard por rol y centralice preocupaciones transversales con interceptors para autenticacion, loading y manejo de errores. Ademas conecte el frontend con una API en ASP.NET Core que autentica con JWT y persiste usuarios y roles en SQL Server. El foco principal fue construir un frontend mas profesional, pero con un circuito real de login, autorizacion y administracion de usuarios."
+
+Que podes decir que aprendiste
+- Manejo guards e interceptors en una SPA real.
+- Implemento estado compartido con BehaviorSubject.
+- Trabajo con formularios reactivos avanzados.
+- Separo responsabilidades con una arquitectura escalable.
+- Pienso la UX, no solo el CRUD.
+- Puedo integrar frontend con auth real y backend de soporte.
+
+Diferencia con el Proyecto 1
+Proyecto 1
+- Demuestra que sabes conectar Angular, .NET y SQL con un CRUD Full Stack simple.
+
+Proyecto 2
+- Demuestra que sabes construir un frontend mas profesional, con autenticacion, autorizacion, estado reactivo, arquitectura mas madura y mejor experiencia de usuario.
+
+README recomendado para este proyecto
+Secciones sugeridas
+- Descripcion del sistema.
+- Tecnologias utilizadas.
+- Arquitectura frontend y backend.
+- Flujo de autenticacion.
+- Funcionalidades principales.
+- Script de base de datos.
+- Como ejecutar backend y frontend.
+- Credenciales de prueba si despues queres agregarlas.
+
+Conclusion
+Este proyecto representa mucho mejor una etapa intermedia/avanzada de Angular que el plan original del mes 2. No te quedaste en componentes reutilizables y validaciones: sumaste auth, roles, store reactivo, guard, interceptors, loader global, formularios mas serios y una estructura mucho mas cercana a una aplicacion real de empresa.

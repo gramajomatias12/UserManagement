@@ -7,12 +7,12 @@ import { MatChipsModule } from '@angular/material/chips'; // Para etiquetas de R
 import { UserStore } from '../user.store';
 import { MatDialog } from '@angular/material/dialog';
 import { UserForm } from '../user-form/user-form';
-import { RouterLink } from "@angular/router";
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-list',
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatChipsModule, RouterLink],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatChipsModule, MatSnackBarModule],
   templateUrl: './user-list.html',
   styleUrl: './user-list.scss',
 })
@@ -25,6 +25,7 @@ export class UserList {
   users$ = this.usersStore.users$;
   private dialog = inject(MatDialog);
   public isAdmin$ = this.usersStore.isAdmin$;
+  private snackBar = inject(MatSnackBar);
 
   constructor() { }
 
@@ -45,7 +46,22 @@ export class UserList {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.usersStore.deleteUser(usuario.cdUsuario);
+        // Ahora nos suscribimos aquí para reaccionar al éxito
+        this.usersStore.deleteUser(usuario.cdUsuario).subscribe({
+          next: () => {
+            this.snackBar.open(`Usuario ${usuario.dsNombre} eliminado`, 'Cerrar', {
+              duration: 3000,
+              panelClass: ['success-snackbar'] // El mismo estilo verde que antes
+            });
+
+            // Recargamos la lista para que desaparezca de la tabla
+            this.usersStore.loadUsers();
+          },
+          error: (err: any) => {
+            console.error('Error al borrar:', err);
+            // Opcional: SnackBar de error si tu interceptor no lo hace
+          }
+        });
       }
     });
   }
@@ -54,14 +70,24 @@ export class UserList {
   abrirForm(usuario?: any) {
     const dialogRef = this.dialog.open(UserForm, {
       width: '450px',
-      data: usuario // Si es undefined, el form sabe que es "Nuevo"
+      data: usuario
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Aquí llamaremos al store para guardar el usuario (ya sea nuevo o editado)
-        this.usersStore.saveUser(result);
-        console.log('Data para guardar:', result);
+        // Ahora saveUser retorna un Observable, por lo que subscribe funciona
+        this.usersStore.saveUser(result).subscribe({
+          next: (res: any) => {
+            this.snackBar.open('¡Usuario guardado correctamente!', 'Cerrar', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+            this.usersStore.loadUsers();
+          },
+          error: (err: any) => {
+            console.error('Error al guardar:', err);
+          }
+        });
       }
     });
   }

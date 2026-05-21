@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { UserStore } from '../user.store';
+import { Loading } from '../../../core/loading';
 
 export const passwordsMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('dsPassword');
@@ -29,6 +30,9 @@ export class UserForm {
   private fb = inject(FormBuilder);
   private store = inject(UserStore);
   private dialogRef = inject(MatDialogRef<UserForm>);
+  public loadingService = inject(Loading);
+
+  isLoading$ = this.loadingService.loading$; // Para mostrar un spinner o deshabilitar el botón mientras cargan los roles
 
   // Recibimos los datos si es edición
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }

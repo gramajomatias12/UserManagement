@@ -7,7 +7,6 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
-
 export class UserStore {
   // 1. PRIMERO declaramos las variables de estado
   private readonly _currentUser = new BehaviorSubject<any>(null);
@@ -81,6 +80,7 @@ export class UserStore {
   );
 
   saveUser(userData: any) {
+
     this.data.postEntidad('Usuarios', userData).subscribe({
       next: () => {
         this.loadUsers();
@@ -88,17 +88,24 @@ export class UserStore {
       },
       error: (err) => console.error('Error al guardar:', err)
     });
+    // Por ahora, devolvemos un Observable vacío para que el subscribe en el componente no falle
+    return this.data.postEntidad('Usuarios', userData);
+
   }
 
+  // deleteUser(cdUsuario: number) {
+  //   const dataABorrar = { cdUsuario: cdUsuario };
+  //   this.data.postEntidad('Usuarios_D', dataABorrar).subscribe({
+  //     next: () => {
+  //       this.loadUsers();
+  //       console.log('Usuario eliminado');
+  //     },
+  //     error: (err) => console.error('Error al borrar:', err)
+  //   });
+  // }
   deleteUser(cdUsuario: number) {
     const dataABorrar = { cdUsuario: cdUsuario };
-    this.data.postEntidad('Usuarios_D', dataABorrar).subscribe({
-      next: () => {
-        this.loadUsers();
-        console.log('Usuario eliminado');
-      },
-      error: (err) => console.error('Error al borrar:', err)
-    });
+    return this.data.postEntidad('Usuarios_D', dataABorrar);
   }
 
   loadRoles() {

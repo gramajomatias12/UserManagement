@@ -62,6 +62,13 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="guardar()" color="primary" [disabled]="userForm.invalid">Guardar</button>
-  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-button (click)="guardar()" color="primary" [disabled]="userForm.invalid || (isLoading$ | async)">
+    @if(!(isLoading$ | async))
+    {
+      <span>Guardar</span>}
+    @else
+    {
+      <span>Guardando...</span>}
+  </button>
+  <button mat-button mat-dialog-close [disabled]="isLoading$ | async">Cancelar</button>
 </mat-dialog-actions>
